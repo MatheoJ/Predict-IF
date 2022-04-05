@@ -91,6 +91,14 @@ public class Main {
         Consultation consPrise = Service.demanderConsultation(cons);
         System.out.println(consPrise);
         
+        // Obtenir la consultation actuelle du client
+        Consultation consActuelleClient = Service.getConsultationActuelleClient(clientConsulte);
+        System.out.println(consActuelleClient);
+        
+        // Obtenir la consultation actuelle de l'employé
+        Consultation consActuelleEmploye = Service.getConsultationActuelleEmploye(consPrise.getEmploye());
+        System.out.println(consActuelleEmploye);
+        
         // Acceptation d'une consultation
         try {
             consPrise = Service.accepterConsultation(consPrise);
@@ -141,6 +149,12 @@ public class Main {
             //System.out.println(c.getCommentaire());
         }
         
+        // Obtenir le Top 5 des médiums
+        List<Medium> top5medium = Service.obtenirTop5Medium();
+        for (Medium m: top5medium)
+        {
+            System.out.println(m.getDenomination());
+        }
         
 //        testRechercheClient(
 //                (long) 0);

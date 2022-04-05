@@ -105,7 +105,7 @@ public class Service {
         employes.add(new Employe("SEMONNIT", "Walid", "0287856816", "wsemonnit8079@outlook.com", "mpd", "M", true));
         employes.add(new Employe("BONNOARI", "Clément", "0418488995", "cbonnoari@outlook.com", "mpd", "M", true));
         employes.add(new Employe("JAMBOT", "Jonathan", "0831895356", "jonathan.jambot@outlook.com", "mpd", "M", true));
-        
+
         boolean res = true;
 
         EmployeDao employeDao = new EmployeDao();
@@ -289,7 +289,7 @@ public class Service {
             cons.setEtat(EtatConsultation.EN_COURS);
             ConsultationDao consultationDao = new ConsultationDao();
             consultationDao.modifier(cons);
-            
+
             JpaUtil.validerTransaction();
 
             // Envoi d'une notification au client
@@ -314,8 +314,7 @@ public class Service {
         }
         return cons;
     }
-    
-    
+
     public static Consultation finirConsultation(Consultation cons) throws Exception {
         try {
             JpaUtil.creerContextePersistance();
@@ -324,20 +323,20 @@ public class Service {
             cons.setEtat(EtatConsultation.FINI);
             ConsultationDao consultationDao = new ConsultationDao();
             consultationDao.modifier(cons);
-            
+
             // On incrémente le nombre de consultations faites par l'employé
             Employe employe = cons.getEmploye();
             employe.setDisponibilite(true);
-            employe.setNbConsultation(employe.getNbConsultation()+1);
+            employe.setNbConsultation(employe.getNbConsultation() + 1);
             EmployeDao employeDao = new EmployeDao();
             employeDao.modifier(employe);
-            
+
             // On incrémente le nombre de consultations prises avec le médium
             Medium medium = cons.getMedium();
-            medium.setNbConsultation(medium.getNbConsultation()+1);
+            medium.setNbConsultation(medium.getNbConsultation() + 1);
             MediumDao mediumDao = new MediumDao();
             mediumDao.modifier(medium);
-            
+
             JpaUtil.validerTransaction();
 
         } catch (Exception e) {
@@ -346,11 +345,11 @@ public class Service {
         } finally {
             JpaUtil.fermerContextePersistance();
         }
-        
+
         return cons;
     }
-    
-    public static void saisirCommentaire(Consultation cons, String comm) throws Exception{
+
+    public static void saisirCommentaire(Consultation cons, String comm) throws Exception {
         try {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
@@ -358,7 +357,7 @@ public class Service {
             cons.setCommentaire(comm);
             ConsultationDao consultationDao = new ConsultationDao();
             consultationDao.modifier(cons);
-                       
+
             JpaUtil.validerTransaction();
 
         } catch (Exception e) {
@@ -368,66 +367,59 @@ public class Service {
             JpaUtil.fermerContextePersistance();
         }
     }
-    
-    public static List<String> obtenirPredictions(ProfilAstral profilAstral, int amour, int sante, int travail) throws IOException{
+
+    public static List<String> obtenirPredictions(ProfilAstral profilAstral, int amour, int sante, int travail) throws IOException {
         AstroNetApi astroApi = new AstroNetApi();
-        
+
         List<String> predictions = astroApi.getPredictions(profilAstral.getCouleurBonheur(), profilAstral.getAnimalTotem(), amour, sante, travail);
-        
+
         return predictions;
     }
-    
-    public static List<Consultation> obtenirHistoriqueConsultationClient(Client c){
+
+    public static List<Consultation> obtenirHistoriqueConsultationClient(Client c) {
         JpaUtil.creerContextePersistance();
         ClientDao clientDao = new ClientDao();
         List<Consultation> consultations = clientDao.obtenirConsultation(c);
         JpaUtil.fermerContextePersistance();
-        
+
         return consultations;
     }
-    
-     public static List<Consultation> obtenirHistoriqueConsultationEmploye(Employe e){
+
+    public static List<Consultation> obtenirHistoriqueConsultationEmploye(Employe e) {
         JpaUtil.creerContextePersistance();
         EmployeDao employeDao = new EmployeDao();
         List<Consultation> consultations = employeDao.obtenirConsultation(e);
         JpaUtil.fermerContextePersistance();
-        
+
         return consultations;
     }
-     
-     public static List<Medium> obtenirTop5Medium() throws Exception{
-         List<Medium> mediums;
+
+    public static List<Medium> obtenirTop5Medium() {
+        List<Medium> mediums;
         JpaUtil.creerContextePersistance();
-        JpaUtil.ouvrirTransaction();
 
         MediumDao mediumDao = new MediumDao();
         mediums = mediumDao.obtenirTop5();
 
-        JpaUtil.validerTransaction();
-
         JpaUtil.fermerContextePersistance();
-         return mediums;
-     }
-     
-     public static Consultation getConsultationActuelleClient(Client c)
-     {
+        return mediums;
+    }
+
+    public static Consultation getConsultationActuelleClient(Client c) {
         JpaUtil.creerContextePersistance();
         ClientDao clientDao = new ClientDao();
         Consultation consultation = clientDao.obtenirConsultationActuelle(c);
         JpaUtil.fermerContextePersistance();
-        
+
         return consultation;
-     }
-     
-     
-     public static Consultation getConsultationActuelleEmploye(Employe e)
-     {
+    }
+
+    public static Consultation getConsultationActuelleEmploye(Employe e) {
         JpaUtil.creerContextePersistance();
         EmployeDao employeDao = new EmployeDao();
         Consultation consultation = employeDao.obtenirConsultationActuelle(e);
         JpaUtil.fermerContextePersistance();
-        
-        return consultation;
-     }
-}
 
+        return consultation;
+    }
+}

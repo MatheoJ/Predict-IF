@@ -61,7 +61,7 @@ public class EmployeDao extends PersonneDao{
     public Consultation obtenirConsultationActuelle(Employe employe) {
         String s = "select c from Consultation c where c.employe=:unEmploye and c.etat<>:unEtat";
         TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(s, Employe.class);
-        query.setParameter("unClient", employe);
+        query.setParameter("unEmploye", employe);
         query.setParameter("unEtat", EtatConsultation.FINI);
         return (Consultation) query.getSingleResult();
     }
