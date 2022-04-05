@@ -369,6 +369,10 @@ public class Service {
     }
 
     public static List<String> obtenirPredictions(ProfilAstral profilAstral, int amour, int sante, int travail) throws IOException {
+        if (amour > 4 || amour < 0 || sante > 4 || sante < 0 || travail > 4 || travail < 0)
+        {
+            throw new Exception("Les notes saisies doivent être comprises entre 0 et 4.");
+        }
         AstroNetApi astroApi = new AstroNetApi();
 
         List<String> predictions = astroApi.getPredictions(profilAstral.getCouleurBonheur(), profilAstral.getAnimalTotem(), amour, sante, travail);
