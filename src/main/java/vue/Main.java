@@ -10,10 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import metier.modele.Consultation;
 import metier.modele.Employe;
 import metier.modele.Medium;
@@ -43,8 +39,12 @@ public class Main {
         // Initialisation des employés
         Service.initialiserEmployes();
         
-        // Initialisation des Mediums
-        Service.initialiserMedium();
+        try {
+            // Initialisation des Mediums
+            Service.initialiserMedium();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         String pattern = "dd/MM/yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);

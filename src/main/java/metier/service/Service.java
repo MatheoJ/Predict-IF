@@ -9,14 +9,11 @@ import dao.MediumDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
 import metier.modele.Astrologue;
 import metier.modele.Cartomancien;
 import metier.modele.Consultation;
@@ -27,8 +24,6 @@ import metier.modele.ProfilAstral;
 import metier.modele.Spirite;
 import util.AstroNetApi;
 import util.Message;
-import vue.Main;
-import static vue.Main.testIncriptionClient;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -42,9 +37,7 @@ import static vue.Main.testIncriptionClient;
 public class Service {
     //new Employe("JOSEPH", "Mathéo", "1365464", "matheo.joseph@insa-lyon.fr", "admin", simpleDateFormat.parse("20/05/2001"), "13 rue cambon", "M", True)
 
-    // Renvoie true si la génération des mediums
-    // s'est bien déroulée
-    public static boolean initialiserMedium() {
+    public static void initialiserMedium() throws Exception {
 
         // Attention, on rollback tous les employés si
         // un des employés n'est pas bon !
@@ -72,8 +65,6 @@ public class Service {
         mediums.add(new Cartomancien("M", "Routard", "Un coin de repos entre copains."));
         mediums.add(new Spirite("Un étang", "M", "Professeur Cadavérique", "Consultation dans la nature !"));
 
-        boolean res = true;
-
         MediumDao mediumDao = new MediumDao();
         try {
             JpaUtil.ouvrirTransaction();
@@ -84,14 +75,11 @@ public class Service {
             JpaUtil.validerTransaction();
 
         } catch (Exception ex) {
-            ex.printStackTrace();
-            res = false;
             JpaUtil.annulerTransaction();
+            throw new Exception("Les médiums n'ont pas pu être initalisés, veuillez réessayer plus tard.");
         } finally {
             JpaUtil.fermerContextePersistance();
-
         }
-        return res;
     }
 
     // Renvoie true si la génération des employés
@@ -117,9 +105,6 @@ public class Service {
         employes.add(new Employe("SEMONNIT", "Walid", "0287856816", "wsemonnit8079@outlook.com", "mpd", "M", true));
         employes.add(new Employe("BONNOARI", "Clément", "0418488995", "cbonnoari@outlook.com", "mpd", "M", true));
         employes.add(new Employe("JAMBOT", "Jonathan", "0831895356", "jonathan.jambot@outlook.com", "mpd", "M", true));
-
-        
-        
         
         boolean res = true;
 
@@ -236,18 +221,12 @@ public class Service {
         return res;
     }
 
-    public static Client authentifierClient(String mail, String motDePasse) throws Exception {
+    public static Client authentifierClient(String mail, String motDePasse) {
         Client res;
-        try {
-            JpaUtil.creerContextePersistance();
-            ClientDao clientDao = new ClientDao();
-            res = clientDao.authentifier(mail, motDePasse);
-        } catch (Exception e) {
-            JpaUtil.annulerTransaction();
-            throw new Exception("Indentifiants incorrects.");
-        } finally {
-            JpaUtil.fermerContextePersistance();
-        }
+        JpaUtil.creerContextePersistance();
+        ClientDao clientDao = new ClientDao();
+        res = clientDao.authentifier(mail, motDePasse);
+        JpaUtil.fermerContextePersistance();
         return res;
     }
 
@@ -418,21 +397,15 @@ public class Service {
      
      public static List<Medium> obtenirTop5Medium() throws Exception{
          List<Medium> mediums;
-         try {
-            JpaUtil.creerContextePersistance();
-            JpaUtil.ouvrirTransaction();
-            
-            MediumDao mediumDao = new MediumDao();
-            mediums = mediumDao.obtenirTop5();
-                       
-            JpaUtil.validerTransaction();
+        JpaUtil.creerContextePersistance();
+        JpaUtil.ouvrirTransaction();
 
-        } catch (Exception e) {
-            JpaUtil.annulerTransaction();
-            throw new Exception("Les médiums n'ont pas pu être obtenus, veuillez réessayer plus tard.");
-        } finally {
-            JpaUtil.fermerContextePersistance();
-        }
+        MediumDao mediumDao = new MediumDao();
+        mediums = mediumDao.obtenirTop5();
+
+        JpaUtil.validerTransaction();
+
+        JpaUtil.fermerContextePersistance();
          return mediums;
      }
      
