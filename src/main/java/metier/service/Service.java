@@ -409,6 +409,12 @@ public class Service {
         JpaUtil.creerContextePersistance();
         ClientDao clientDao = new ClientDao();
         List<Consultation> consultations = clientDao.obtenirConsultation(c);
+        // Le client ne doit pas pouvoir accéder aux commentaires qui lui sont associés.
+        // Ils doivent donc être supprimés avant de lui envoyer son historique de consultation.
+        for (Consultation cons: consultations)
+        {
+            cons.setCommentaire("N/A");
+        }
         JpaUtil.fermerContextePersistance();
 
         return consultations;

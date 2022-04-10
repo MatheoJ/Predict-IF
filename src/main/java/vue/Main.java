@@ -2,11 +2,9 @@ package vue;
 
 import metier.modele.Client;
 import dao.JpaUtil;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,8 +15,6 @@ import metier.service.Service;
 import static metier.service.Service.authentifierClient;
 import static metier.service.Service.authentifierEmploye;
 import static metier.service.Service.inscrireClient;
-import static metier.service.Service.listerTousClients;
-import static metier.service.Service.trouverClientParId;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
