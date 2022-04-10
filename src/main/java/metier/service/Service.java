@@ -35,7 +35,6 @@ import util.Message;
  * @author mjoseph
  */
 public class Service {
-    //new Employe("JOSEPH", "Mathéo", "1365464", "matheo.joseph@insa-lyon.fr", "admin", simpleDateFormat.parse("20/05/2001"), "13 rue cambon", "M", True)
 
     public static void initialiserMedium() throws Exception {
 
@@ -82,9 +81,7 @@ public class Service {
         }
     }
 
-    // Renvoie true si la génération des employés
-    // s'est bien déroulée
-    public static boolean initialiserEmployes() {
+    public static void initialiserEmployes() throws Exception {
 
         // Attention, on rollback tous les employés si
         // un des employés n'est pas bon !
@@ -106,8 +103,6 @@ public class Service {
         employes.add(new Employe("BONNOARI", "Clément", "0418488995", "cbonnoari@outlook.com", "mpd", "M", true));
         employes.add(new Employe("JAMBOT", "Jonathan", "0831895356", "jonathan.jambot@outlook.com", "mpd", "M", true));
 
-        boolean res = true;
-
         EmployeDao employeDao = new EmployeDao();
         try {
             JpaUtil.ouvrirTransaction();
@@ -118,13 +113,11 @@ public class Service {
             JpaUtil.validerTransaction();
 
         } catch (Exception ex) {
-            res = false;
             JpaUtil.annulerTransaction();
+            throw new Exception("Les employés n'ont pas pu être initalisés, veuillez réessayer plus tard.");
         } finally {
             JpaUtil.fermerContextePersistance();
-
         }
-        return res;
     }
 
     public static Client inscrireClient(Client c) {
@@ -218,6 +211,15 @@ public class Service {
         List<Medium> res = mediumDao.chercherTous();
         JpaUtil.fermerContextePersistance();
 
+        return res;
+    }
+
+    public static Employe authentifierEmploye(String mail, String motDePasse) {
+        Employe res;
+        JpaUtil.creerContextePersistance();
+        EmployeDao employeDao = new EmployeDao();
+        res = employeDao.authentifier(mail, motDePasse);
+        JpaUtil.fermerContextePersistance();
         return res;
     }
 
@@ -317,28 +319,31 @@ public class Service {
 
     public static Consultation finirConsultation(Consultation cons) throws Exception {
         try {
-            JpaUtil.creerContextePersistance();
-            JpaUtil.ouvrirTransaction();
-            // La consultation est en cours
-            cons.setEtat(EtatConsultation.FINI);
-            ConsultationDao consultationDao = new ConsultationDao();
-            consultationDao.modifier(cons);
+            if (cons.getEtat() == EtatConsultation.EN_COURS) {
+                JpaUtil.creerContextePersistance();
+                JpaUtil.ouvrirTransaction();
+                // La consultation est en cours
+                cons.setEtat(EtatConsultation.FINI);
+                ConsultationDao consultationDao = new ConsultationDao();
+                consultationDao.modifier(cons);
 
-            // On incrémente le nombre de consultations faites par l'employé
-            Employe employe = cons.getEmploye();
-            employe.setDisponibilite(true);
-            employe.setNbConsultation(employe.getNbConsultation() + 1);
-            EmployeDao employeDao = new EmployeDao();
-            employeDao.modifier(employe);
+                // On incrémente le nombre de consultations faites par l'employé
+                Employe employe = cons.getEmploye();
+                employe.setDisponibilite(true);
+                employe.setNbConsultation(employe.getNbConsultation() + 1);
+                EmployeDao employeDao = new EmployeDao();
+                employeDao.modifier(employe);
 
-            // On incrémente le nombre de consultations prises avec le médium
-            Medium medium = cons.getMedium();
-            medium.setNbConsultation(medium.getNbConsultation() + 1);
-            MediumDao mediumDao = new MediumDao();
-            mediumDao.modifier(medium);
+                // On incrémente le nombre de consultations prises avec le médium
+                Medium medium = cons.getMedium();
+                medium.setNbConsultation(medium.getNbConsultation() + 1);
+                MediumDao mediumDao = new MediumDao();
+                mediumDao.modifier(medium);
 
-            JpaUtil.validerTransaction();
-
+                JpaUtil.validerTransaction();
+            } else {
+                throw new Exception("La consultation que l'on cherche à fermer n'est pas en cours !");
+            }
         } catch (Exception e) {
             JpaUtil.annulerTransaction();
             throw new Exception("La consultation n'a pas pu être acceptée, veuillez réessayer plus tard.");
@@ -368,9 +373,8 @@ public class Service {
         }
     }
 
-    public static List<String> obtenirPredictions(ProfilAstral profilAstral, int amour, int sante, int travail) throws IOException {
-        if (amour > 4 || amour < 0 || sante > 4 || sante < 0 || travail > 4 || travail < 0)
-        {
+    public static List<String> obtenirPredictions(ProfilAstral profilAstral, int amour, int sante, int travail) throws IOException, Exception {
+        if (amour > 4 || amour < 0 || sante > 4 || sante < 0 || travail > 4 || travail < 0) {
             throw new Exception("Les notes saisies doivent être comprises entre 0 et 4.");
         }
         AstroNetApi astroApi = new AstroNetApi();

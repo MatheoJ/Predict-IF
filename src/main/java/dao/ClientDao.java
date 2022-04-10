@@ -43,7 +43,7 @@ public class ClientDao extends PersonneDao{
         // /!\ JPQL sensible à la casse
         String s = "select c from Client c where c.mail='"+mail+"' and c.motDePasse='"+motDePasse+"'";
         TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(s, Client.class);
-        return (Client) query.getSingleResult();
+        return (Client) query.getResultList().stream().findFirst().orElse(null);
     }
     
     public Client chercherParId(Long id) {

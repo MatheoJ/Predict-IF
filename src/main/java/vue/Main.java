@@ -31,74 +31,140 @@ import static metier.service.Service.trouverClientParId;
 public class Main {
 
     public static void main(String[] args) {
-        /* To-Do:
-            Dans Service.java, mettre sous forme try catch finally.
-        */
+
+        // Initialisation de la persistance
         JpaUtil.init();
-        
-        // Initialisation des employés
-        Service.initialiserEmployes();
-        
+
+        // SERVICES -----------------------------------------------
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Initialisation des mediums");
         try {
             // Initialisation des Mediums
             Service.initialiserMedium();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        List<Medium> mediums = Service.listerTousMedium();
+        for (Medium m : mediums) {
+            System.out.println(m);
+        }
+        System.out.println("--------------------------------");
         
         String pattern = "dd/MM/yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
-        initialiserClients();
-       
-        List<Client> clientsAInscrire = new ArrayList<>();
+        
+        System.out.println("--------------------------------");
+        System.out.println("Test: Inscription des clients");
+       List<Client> clientsAInscrire = new ArrayList<>();
         try {
-           
-            clientsAInscrire.add(new Client("JOSEPH", "Mathéo", "1365464", "matheo.joseph@insa-lyon.fr", "admin", simpleDateFormat.parse("20/05/2001"), "13 rue cambon"));
             clientsAInscrire.add(new Client("JOSEPH", "Mathéo", "1365464", "matheo.joseph@insa-lyon.fr", "admin", simpleDateFormat.parse("20/05/2001"), "13 rue cambon"));
             clientsAInscrire.add(new Client("NOT", "Anadmin", "1365464", "not.anadmin@insa-lyon.fr", "notandmin", simpleDateFormat.parse("20/05/2001"), "13 rue cambon"));
-                    
         } catch (ParseException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         for (Client c : clientsAInscrire) {
-            testIncriptionClient(c);
+            if (inscrireClient(c) == null)
+            {
+                System.out.println("ERREUR: Le client n'a pas pu être inscrit: " + c);
+            }
         }
-        
         List<Client> clients = Service.listerTousClients();
-        for (Client c: clients)
-        {
+        for (Client c : clients) {
             System.out.println(c);
         }
-        System.out.println("-------------");
-        List<Medium> mediums = Service.listerTousMedium();
-        for (Medium m: mediums)
-        {
-            System.out.println(m);
-        }
-        System.out.println("-------------");
-        List<Employe> employes = Service.listerTousEmploye();
-        for (Employe e: employes)
-        {
-            System.out.println(e);
-        }
-        System.out.println("-------------");
         
+        System.out.println("--------------------------------");
+        System.out.println("Test: Initialisation d'un client non unique");
+        Client nonUniqueClient = new Client("JOSEPH", "Mathéo", "1365464", "matheo.joseph@insa-lyon.fr", "admin", simpleDateFormat.parse("20/05/2001"), "13 rue cambon");
+        if (inscrireClient(nonUniqueClient) == null)
+        {
+            System.out.println("ERREUR: Le client n'a pas pu être inscrit: " + nonUniqueClient);
+        }
+        clients = Service.listerTousClients();
+        for (Client c : clients) {
+            System.out.println(c);
+        }
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Création d'une consultation sans employés disponible");
         // Création d'une consultation
         Client clientConsulte = clients.get(0);
         Medium mediumConsulte = mediums.get(0);
         Consultation cons = new Consultation(clientConsulte, mediumConsulte);
         Consultation consPrise = Service.demanderConsultation(cons);
         System.out.println(consPrise);
+        System.out.println("--------------------------------");
         
+        System.out.println("--------------------------------");
+        System.out.println("Test: Initialisation des employés");
+        try {
+            // Initialisation des employés
+            Service.initialiserEmployes();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        List<Employe> employes = Service.listerTousEmploye();
+        for (Employe e : employes) {
+            System.out.println(e);
+        }
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Test: Obtenir la consultation actuelle\r\n"
+                + "d'un client qui n'a pas de consultation actuelle");
         // Obtenir la consultation actuelle du client
-        Consultation consActuelleClient = Service.getConsultationActuelleClient(clientConsulte);
+        Consultation consActuelleClient = Service.getConsultationActuelleClient(clients.get(0));
         System.out.println(consActuelleClient);
+        System.out.println("--------------------------------");
         
+        System.out.println("--------------------------------");
+        System.out.println("Test: Obtenir la consultation actuelle\r\n"
+                + "d'un employé qui n'a pas de consultation actuelle");
         // Obtenir la consultation actuelle de l'employé
-        Consultation consActuelleEmploye = Service.getConsultationActuelleEmploye(consPrise.getEmploye());
+        Consultation consActuelleEmploye = Service.getConsultationActuelleEmploye(employes.get(0));
         System.out.println(consActuelleEmploye);
+        System.out.println("--------------------------------");
         
+        System.out.println("--------------------------------");
+        System.out.println("Test: Création d'une consultation avec employés disponible");
+        // Création d'une consultation
+        clientConsulte = clients.get(0);
+        mediumConsulte = mediums.get(0);
+        cons = new Consultation(clientConsulte, mediumConsulte);
+        consPrise = Service.demanderConsultation(cons);
+        System.out.println(consPrise);
+        System.out.println("--------------------------------");
+        
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Obtenir la consultation actuelle du client");
+        // Obtenir la consultation actuelle du client
+        consActuelleClient = Service.getConsultationActuelleClient(clientConsulte);
+        System.out.println(consActuelleClient);
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Obtenir la consultation actuelle de l'employé");
+        // Obtenir la consultation actuelle de l'employé
+        consActuelleEmploye = Service.getConsultationActuelleEmploye(consPrise.getEmploye());
+        System.out.println(consActuelleEmploye);
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Acceptation d'une consultation qui n'existe pas");
+        // Acceptation d'une consultation
+        try {
+            consPrise = Service.accepterConsultation(null);
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println(consPrise);
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Test: Acceptation d'une consultation");
         // Acceptation d'une consultation
         try {
             consPrise = Service.accepterConsultation(consPrise);
@@ -106,18 +172,50 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println(consPrise);
-        
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Générer prédictions");
         // Générer prédictions
         try {
             List<String> predictions = Service.obtenirPredictions(clientConsulte.getProfilAstral(), 1, 2, 3);
-            for (String p: predictions)
-            {
+            for (String p : predictions) {
                 System.out.println(p);
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("--------------------------------");
         
+        System.out.println("--------------------------------");
+        System.out.println("Test: Générer prédictions avec des notes\r\n"
+                + "qui ne sont pas entres 0 et 4");
+        // Générer prédictions
+        try {
+            List<String> predictions = Service.obtenirPredictions(clientConsulte.getProfilAstral(), -1, 2, 3);
+            for (String p : predictions) {
+                System.out.println(p);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Test: Générer prédictions pour un client inexistant");
+        // Générer prédictions
+        try {
+            List<String> predictions = Service.obtenirPredictions(null, 1, 2, 3);
+            for (String p : predictions) {
+                System.out.println(p);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Terminer la consultation");
         // Terminer la consultation
         try {
             consPrise = Service.finirConsultation(consPrise);
@@ -125,53 +223,63 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println(consPrise);
-        
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Saisir commentaire");
         // Saisir commentaire
         try {
-             Service.saisirCommentaire(cons, "Franchement pas terrible, il a repris un peu d'espoir avec la dernière prédiction, puis s'est rendu compte que le signe collaborateur que le signe collaborateur était le chien. Ducoup temps mort pour ce client.");
+            Service.saisirCommentaire(cons, "Franchement pas terrible, il a repris un peu d'espoir avec la dernière prédiction, puis s'est rendu compte que le signe collaborateur que le signe collaborateur était le chien. Ducoup temps mort pour ce client.");
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Obtenir historique des consultations du client");
         // Obtenir historique des consultations du client
         List<Consultation> consultationsClient = Service.obtenirHistoriqueConsultationClient(clientConsulte);
-        for (Consultation c: consultationsClient)
-        {
+        for (Consultation c : consultationsClient) {
             System.out.println(c);
             //System.out.println(c.getCommentaire());
         }
-        
+        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Obtenir historique des consultations de l'employé");
         // Obtenir historique des consultations de l'employé
         List<Consultation> consultationsEmploye = Service.obtenirHistoriqueConsultationEmploye(cons.getEmploye());
-        for (Consultation c: consultationsEmploye)
-        {
+        for (Consultation c : consultationsEmploye) {
             System.out.println(c);
             //System.out.println(c.getCommentaire());
         }
+        System.out.println("--------------------------------");
+
+//        System.out.println("--------------------------------");
+//        System.out.println("Test: Obtenir le Top 5 des médiums");
+//        // Obtenir le Top 5 des médiums
+//        List<Medium> top5medium = Service.obtenirTop5Medium();
+//        for (Medium m : top5medium) {
+//            System.out.println(m.getDenomination());
+//        }
+//        System.out.println("--------------------------------");
+
+        System.out.println("--------------------------------");
+        System.out.println("Test: Authentification d'un client existant");
+        // Authentification d'un client existant
+        System.out.println(authentifierClient("matheo.joseph@insa-lyon.fr", "admin"));
+        System.out.println("--------------------------------");
         
-        // Obtenir le Top 5 des médiums
-        List<Medium> top5medium = Service.obtenirTop5Medium();
-        for (Medium m: top5medium)
-        {
-            System.out.println(m.getDenomination());
-        }
+        System.out.println("--------------------------------");
+        System.out.println("Test: Authentification d'un client non existant (mauvais identifiants)");
+        // Authentification d'un client non existant (mauvais identifiants)
+        System.out.println(authentifierClient("matheo.joseph@insa-lyon.fr", "notanadmin"));
+        System.out.println("--------------------------------");
         
-//        testRechercheClient(
-//                (long) 0);
-//        testRechercheClient(
-//                (long) 1);
-//        testRechercheClient(
-//                (long) 2);
-//        testRechercheClient(
-//                (long) 3);
-//
-//        testListerTousClients();
-//
-//        testerAuthentificationClient(
-//                "matheo.joseph@insa-lyon.fr", "admin");
+        // SERVICES -----------------------------------------------
     }
 
-    public static void initialiserClients() {
+//    public static void initialiserClients() {
 //        EntityManagerFactory emf = null;
 //        EntityManager em = null;
 //        EntityTransaction tx = null;
@@ -199,9 +307,7 @@ public class Main {
 //                em.close();
 //            }
 //        }
-
-    }
-    
+//    }
 //    public static void initaliserEmploye() {
 //        EntityManagerFactory emf = null;
 //        EntityManager em = null;
@@ -231,51 +337,5 @@ public class Main {
 //            }
 //        }
 //
-//    }
-
-    public static void testIncriptionClient(Client c) {
-        if (inscrireClient(c) != null) {
-            System.out.println("Succès inscription");
-        } else {
-            System.out.println("Echec inscription");
-        }
-
-        System.out.println(c);
-    }
-
-    public static void testRechercheClient(Long id) {
-        Client c;
-        if ((c = trouverClientParId(id)) != null) {
-            System.out.println("Succès recherche");
-            System.out.println(c);
-        } else {
-            System.out.println("Echec recherche");
-        }
-    }
-
-    public static void testListerTousClients() {
-        List<Client> c;
-        if ((c = listerTousClients()) != null) {
-            System.out.println("Succès recherche");
-
-            Iterator<Client> cIterator = c.iterator();
-            while (cIterator.hasNext()) {
-                System.out.println(cIterator.next());
-            }
-
-            //System.out.println(c);
-        } else {
-            System.out.println("Echec recherche");
-        }
-    }
-
-    public static void testerAuthentificationClient(String mail, String motDePasse) throws Exception {
-        Client c;
-        if ((c = authentifierClient(mail, motDePasse)) != null) {
-            System.out.println("Succès authentification");
-            System.out.println(c);
-        } else {
-            System.out.println("Echec authentification");
-        }
-    }
+//    }   
 }
