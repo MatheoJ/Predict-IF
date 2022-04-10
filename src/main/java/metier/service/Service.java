@@ -217,19 +217,29 @@ public class Service {
 
     public static Employe authentifierEmploye(String mail, String motDePasse) {
         Employe res;
-        JpaUtil.creerContextePersistance();
-        EmployeDao employeDao = new EmployeDao();
-        res = employeDao.authentifier(mail, motDePasse);
-        JpaUtil.fermerContextePersistance();
+        try {
+            JpaUtil.creerContextePersistance();
+            EmployeDao employeDao = new EmployeDao();
+            res = employeDao.authentifier(mail, motDePasse);
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
         return res;
     }
 
     public static Client authentifierClient(String mail, String motDePasse) {
         Client res;
-        JpaUtil.creerContextePersistance();
-        ClientDao clientDao = new ClientDao();
-        res = clientDao.authentifier(mail, motDePasse);
-        JpaUtil.fermerContextePersistance();
+        try {
+            JpaUtil.creerContextePersistance();
+            ClientDao clientDao = new ClientDao();
+            res = clientDao.authentifier(mail, motDePasse);
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
         return res;
     }
 
@@ -285,11 +295,11 @@ public class Service {
     }
 
     public static Consultation accepterConsultation(Consultation cons) throws Exception {
-        
-        if (cons.getEtat()!=EtatConsultation.EN_ATTENTE) {
+
+        if (cons.getEtat() != EtatConsultation.EN_ATTENTE) {
             throw new Exception("La consultation n'est pas en attente.");
         }
-        
+
         try {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
@@ -324,33 +334,33 @@ public class Service {
     }
 
     public static Consultation finirConsultation(Consultation cons) throws Exception {
-        
+
+        if (cons.getEtat() != EtatConsultation.EN_COURS) {
+            throw new Exception("La consultation que l'on cherche à fermer n'est pas en cours !");
+        }
+
         try {
-            if (cons.getEtat() == EtatConsultation.EN_COURS) {
-                JpaUtil.creerContextePersistance();
-                JpaUtil.ouvrirTransaction();
-                // La consultation est en cours
-                cons.setEtat(EtatConsultation.FINI);
-                ConsultationDao consultationDao = new ConsultationDao();
-                consultationDao.modifier(cons);
+            JpaUtil.creerContextePersistance();
+            JpaUtil.ouvrirTransaction();
+            // La consultation est en cours
+            cons.setEtat(EtatConsultation.FINI);
+            ConsultationDao consultationDao = new ConsultationDao();
+            consultationDao.modifier(cons);
 
-                // On incrémente le nombre de consultations faites par l'employé
-                Employe employe = cons.getEmploye();
-                employe.setDisponibilite(true);
-                employe.setNbConsultation(employe.getNbConsultation() + 1);
-                EmployeDao employeDao = new EmployeDao();
-                employeDao.modifier(employe);
+            // On incrémente le nombre de consultations faites par l'employé
+            Employe employe = cons.getEmploye();
+            employe.setDisponibilite(true);
+            employe.setNbConsultation(employe.getNbConsultation() + 1);
+            EmployeDao employeDao = new EmployeDao();
+            employeDao.modifier(employe);
 
-                // On incrémente le nombre de consultations prises avec le médium
-                Medium medium = cons.getMedium();
-                medium.setNbConsultation(medium.getNbConsultation() + 1);
-                MediumDao mediumDao = new MediumDao();
-                mediumDao.modifier(medium);
+            // On incrémente le nombre de consultations prises avec le médium
+            Medium medium = cons.getMedium();
+            medium.setNbConsultation(medium.getNbConsultation() + 1);
+            MediumDao mediumDao = new MediumDao();
+            mediumDao.modifier(medium);
 
-                JpaUtil.validerTransaction();
-            } else {
-                throw new Exception("La consultation que l'on cherche à fermer n'est pas en cours !");
-            }
+            JpaUtil.validerTransaction();
         } catch (Exception e) {
             JpaUtil.annulerTransaction();
             throw new Exception("La consultation n'a pas pu être acceptée, veuillez réessayer plus tard.");
@@ -362,10 +372,10 @@ public class Service {
     }
 
     public static void saisirCommentaire(Consultation cons, String comm) throws Exception {
-        if (cons.getEtat()!=EtatConsultation.FINI) {
-            throw new Exception("La consultation n'est finie.");
+        if (cons.getEtat() != EtatConsultation.FINI) {
+            throw new Exception("Veuillez terminer la consultation avant de saisir un commentaire.");
         }
-        
+
         try {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
@@ -426,15 +436,13 @@ public class Service {
 
     public static Consultation getConsultationActuelleClient(Client c) {
         Consultation consultation;
-        try
-        {
+        try {
             JpaUtil.creerContextePersistance();
             ClientDao clientDao = new ClientDao();
-            consultation = clientDao.obtenirConsultationActuelle(c);        
-        }catch(NoResultException e) {
+            consultation = clientDao.obtenirConsultationActuelle(c);
+        } catch (NoResultException e) {
             return null;
-        }
-        finally{        
+        } finally {
             JpaUtil.fermerContextePersistance();
         }
 
@@ -443,15 +451,13 @@ public class Service {
 
     public static Consultation getConsultationActuelleEmploye(Employe e) {
         Consultation consultation;
-        try{
+        try {
             JpaUtil.creerContextePersistance();
             EmployeDao employeDao = new EmployeDao();
             consultation = employeDao.obtenirConsultationActuelle(e);
-        }
-        catch(NoResultException ex) {
+        } catch (NoResultException ex) {
             return null;
-        }
-        finally{        
+        } finally {
             JpaUtil.fermerContextePersistance();
         }
         return consultation;
