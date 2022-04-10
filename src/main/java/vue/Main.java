@@ -74,6 +74,7 @@ public class Main {
         for (Client c : clients) {
             System.out.println(c);
         }
+        System.out.println("--------------------------------");
         
         System.out.println("--------------------------------");
         System.out.println("Test: Initialisation d'un client non unique");
