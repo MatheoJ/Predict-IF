@@ -15,6 +15,7 @@ import metier.modele.Employe;
 import metier.modele.Medium;
 import metier.service.Service;
 import static metier.service.Service.authentifierClient;
+import static metier.service.Service.authentifierEmploye;
 import static metier.service.Service.inscrireClient;
 import static metier.service.Service.listerTousClients;
 import static metier.service.Service.trouverClientParId;
@@ -38,7 +39,7 @@ public class Main {
         // SERVICES -----------------------------------------------
 
         System.out.println("--------------------------------");
-        System.out.println("Test: Initialisation des mediums");
+        System.out.println("Test: Initialisation et listerTous des mediums");
         try {
             // Initialisation des Mediums
             Service.initialiserMediums();
@@ -264,6 +265,7 @@ public class Main {
 //        }
 //        System.out.println("--------------------------------");
 
+
         System.out.println("--------------------------------");
         System.out.println("Test: Authentification d'un client existant");
         // Authentification d'un client existant
@@ -274,6 +276,18 @@ public class Main {
         System.out.println("Test: Authentification d'un client non existant (mauvais identifiants)");
         // Authentification d'un client non existant (mauvais identifiants)
         System.out.println(authentifierClient("matheo.joseph@insa-lyon.fr", "notanadmin"));
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Test: Authentification d'un employe existant");
+        // Authentification d'un client existant
+        System.out.println(authentifierEmploye("libin.thalot@free.fr", "mpd"));
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Test: Authentification d'un employe non existant (mauvais identifiants)");
+        // Authentification d'un client existant
+        System.out.println(authentifierEmploye("libin.thalot@free.fr", "not_mpd"));
         System.out.println("--------------------------------");
         
         // SERVICES -----------------------------------------------
