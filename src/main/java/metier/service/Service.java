@@ -37,7 +37,7 @@ import util.Message;
  */
 public class Service {
 
-    public static void initialiserMedium() throws Exception {
+    public static void initialiserMediums() throws Exception {
 
         // Attention, on rollback tous les employés si
         // un des employés n'est pas bon !

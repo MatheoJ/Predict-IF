@@ -41,7 +41,7 @@ public class Main {
         System.out.println("Test: Initialisation des mediums");
         try {
             // Initialisation des Mediums
-            Service.initialiserMedium();
+            Service.initialiserMediums();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
