@@ -26,7 +26,7 @@ public class EmployeDao extends PersonneDao{
         // /!\ JPQL sensible à la casse
         String s = "select c from Employe c where c.mail='"+mail+"' and c.motDePasse='"+motDePasse+"'";
         TypedQuery query = JpaUtil.obtenirContextePersistance().createQuery(s, Employe.class);
-        return (Employe) query.getSingleResult();
+        return (Employe) query.getResultList().stream().findFirst().orElse(null);
     }
     
     public Employe chercherParId(Long id) {

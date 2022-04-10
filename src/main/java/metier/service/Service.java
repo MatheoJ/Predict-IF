@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.NoResultException;
 import metier.modele.Astrologue;
 import metier.modele.Cartomancien;
 import metier.modele.Consultation;
@@ -284,6 +285,11 @@ public class Service {
     }
 
     public static Consultation accepterConsultation(Consultation cons) throws Exception {
+        
+        if (cons.getEtat()!=EtatConsultation.EN_ATTENTE) {
+            throw new Exception("La consultation n'est pas en attente.");
+        }
+        
         try {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
@@ -318,6 +324,7 @@ public class Service {
     }
 
     public static Consultation finirConsultation(Consultation cons) throws Exception {
+        
         try {
             if (cons.getEtat() == EtatConsultation.EN_COURS) {
                 JpaUtil.creerContextePersistance();
@@ -355,6 +362,10 @@ public class Service {
     }
 
     public static void saisirCommentaire(Consultation cons, String comm) throws Exception {
+        if (cons.getEtat()!=EtatConsultation.FINI) {
+            throw new Exception("La consultation n'est finie.");
+        }
+        
         try {
             JpaUtil.creerContextePersistance();
             JpaUtil.ouvrirTransaction();
@@ -414,20 +425,35 @@ public class Service {
     }
 
     public static Consultation getConsultationActuelleClient(Client c) {
-        JpaUtil.creerContextePersistance();
-        ClientDao clientDao = new ClientDao();
-        Consultation consultation = clientDao.obtenirConsultationActuelle(c);
-        JpaUtil.fermerContextePersistance();
+        Consultation consultation;
+        try
+        {
+            JpaUtil.creerContextePersistance();
+            ClientDao clientDao = new ClientDao();
+            consultation = clientDao.obtenirConsultationActuelle(c);        
+        }catch(NoResultException e) {
+            return null;
+        }
+        finally{        
+            JpaUtil.fermerContextePersistance();
+        }
 
         return consultation;
     }
 
     public static Consultation getConsultationActuelleEmploye(Employe e) {
-        JpaUtil.creerContextePersistance();
-        EmployeDao employeDao = new EmployeDao();
-        Consultation consultation = employeDao.obtenirConsultationActuelle(e);
-        JpaUtil.fermerContextePersistance();
-
+        Consultation consultation;
+        try{
+            JpaUtil.creerContextePersistance();
+            EmployeDao employeDao = new EmployeDao();
+            consultation = employeDao.obtenirConsultationActuelle(e);
+        }
+        catch(NoResultException ex) {
+            return null;
+        }
+        finally{        
+            JpaUtil.fermerContextePersistance();
+        }
         return consultation;
     }
 }
