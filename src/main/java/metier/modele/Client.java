@@ -35,7 +35,6 @@ public class Client extends Personne{
         this.dateNaissance = dateNaissance;
         this.addrPostale = addrPostale;
         this.profilAstrale = null;
-        
     }
     
     @Override

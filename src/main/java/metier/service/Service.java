@@ -220,6 +220,13 @@ public class Service {
         JpaUtil.creerContextePersistance();
         ClientDao clientDao = new ClientDao();
         List<Client> res = clientDao.chercherTous();
+        
+        // On enlève les mots de passe des données envoyées
+        for (Client c: res)
+        {
+            c.setMotDePasse("N/A");
+        }
+        
         JpaUtil.fermerContextePersistance();
 
         return res;
@@ -229,6 +236,13 @@ public class Service {
         JpaUtil.creerContextePersistance();
         EmployeDao employeDao = new EmployeDao();
         List<Employe> res = employeDao.chercherTous();
+        
+        // On enlève les mots de passe des données envoyées
+        for (Employe e: res)
+        {
+            e.setMotDePasse("N/A");
+        }
+        
         JpaUtil.fermerContextePersistance();
 
         return res;
