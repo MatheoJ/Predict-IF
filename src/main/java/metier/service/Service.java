@@ -185,6 +185,34 @@ public class Service {
         Client res = clientDao.chercherParId(id);
         JpaUtil.fermerContextePersistance();
 
+        // On enlève le mot de passe des données envoyées
+        if (res != null) {
+            res.setMotDePasse("N/A");
+        }
+
+        return res;
+    }
+
+    public static Employe trouverEmployeParId(Long id) {
+        JpaUtil.creerContextePersistance();
+        EmployeDao employeDao = new EmployeDao();
+        Employe res = employeDao.chercherParId(id);
+        JpaUtil.fermerContextePersistance();
+
+        // On enlève le mot de passe des données envoyées
+        if (res != null) {
+            res.setMotDePasse("N/A");
+        }
+
+        return res;
+    }
+
+    public static Medium trouverMediumParId(Long id) {
+        JpaUtil.creerContextePersistance();
+        MediumDao mediumDao = new MediumDao();
+        Medium res = mediumDao.chercherParId(id);
+        JpaUtil.fermerContextePersistance();
+
         return res;
     }
 
@@ -411,8 +439,7 @@ public class Service {
         List<Consultation> consultations = clientDao.obtenirConsultation(c);
         // Le client ne doit pas pouvoir accéder aux commentaires qui lui sont associés.
         // Ils doivent donc être supprimés avant de lui envoyer son historique de consultation.
-        for (Consultation cons: consultations)
-        {
+        for (Consultation cons : consultations) {
             cons.setCommentaire("N/A");
         }
         JpaUtil.fermerContextePersistance();

@@ -322,6 +322,45 @@ public class Main {
         System.out.println(authentifierEmploye("libin.thalot@free.fr", "not_mpd"));
         System.out.println("--------------------------------");
 
+        System.out.println("--------------------------------");
+        System.out.println("Validation Test: Obtenir un client existant par ID");
+        // Obtenir un client existant par ID
+        System.out.println(Service.trouverClientParId(clients.get(0).getId()));
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Fault Test: Obtenir un client inexistant par ID");
+        // Obtenir un client inexistant par ID
+        Long idClient = 15486525L;
+        System.out.println(Service.trouverClientParId(idClient));
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Validation Test: Obtenir un employe existant par ID");
+        // Obtenir un employe existant par ID
+        System.out.println(Service.trouverEmployeParId(employes.get(0).getId()));
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Fault Test: Obtenir un employe inexistant par ID");
+        // Obtenir un employe inexistant par ID
+        Long idEmploye = 15486525L;
+        System.out.println(Service.trouverEmployeParId(idEmploye));
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Validation Test: Obtenir un medium existant par ID");
+        // Obtenir un employe existant par ID
+        System.out.println(Service.trouverMediumParId(mediums.get(0).getId()));
+        System.out.println("--------------------------------");
+        
+        System.out.println("--------------------------------");
+        System.out.println("Fault Test: Obtenir un medium inexistant par ID");
+        // Obtenir un employe inexistant par ID
+        Long idMedium = 15486525L;
+        System.out.println(Service.trouverMediumParId(idMedium));
+        System.out.println("--------------------------------");
+        
         // SERVICES -----------------------------------------------
     }
 

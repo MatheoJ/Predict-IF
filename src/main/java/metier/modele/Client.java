@@ -43,8 +43,6 @@ public class Client extends Personne{
         return "Client{" + "dateNaissance=" + dateNaissance + ", addrPostale=" + addrPostale + ", profilAstrale=" + profilAstrale + "} " + super.toString();
     }
     
-    
-    
     public Date getDateNaissance() {
         return dateNaissance;
     }
