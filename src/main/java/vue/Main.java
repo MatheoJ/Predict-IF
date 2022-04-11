@@ -2,6 +2,7 @@ package vue;
 
 import metier.modele.Client;
 import dao.JpaUtil;
+import dao.MediumDao;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ public class Main {
         // SERVICES -----------------------------------------------
         // Validation Test: renvoie la valeur attendue
         // Fault Test: renvoie une exception (requête d'écriture) OU null (requête de lecture)
-        
         System.out.println("--------------------------------");
         System.out.println("Validation Test: Initialisation et listerTous des mediums");
         try {
@@ -164,7 +164,7 @@ public class Main {
         }
         System.out.println(consPrise);
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Fault Test: Terminer une consultation qui n'a pas été commencée");
         // Terminer la consultation
@@ -186,7 +186,7 @@ public class Main {
         }
         System.out.println(consPrise);
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Fault Test: Acceptation d'une consultation déjà acceptée (en cours)");
         // Acceptation d'une consultation
@@ -237,7 +237,7 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Fault Test: Saisir commentaire sur une consultation non terminée");
         // Saisir commentaire
@@ -297,7 +297,6 @@ public class Main {
 //            System.out.println(m.getDenomination());
 //        }
 //        System.out.println("--------------------------------");
-
         System.out.println("--------------------------------");
         System.out.println("Validation Test: Authentification d'un client existant");
         // Authentification d'un client existant
@@ -327,40 +326,67 @@ public class Main {
         // Obtenir un client existant par ID
         System.out.println(Service.trouverClientParId(clients.get(0).getId()));
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Fault Test: Obtenir un client inexistant par ID");
         // Obtenir un client inexistant par ID
         Long idClient = 15486525L;
         System.out.println(Service.trouverClientParId(idClient));
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Validation Test: Obtenir un employe existant par ID");
         // Obtenir un employe existant par ID
         System.out.println(Service.trouverEmployeParId(employes.get(0).getId()));
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Fault Test: Obtenir un employe inexistant par ID");
         // Obtenir un employe inexistant par ID
         Long idEmploye = 15486525L;
         System.out.println(Service.trouverEmployeParId(idEmploye));
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Validation Test: Obtenir un medium existant par ID");
         // Obtenir un employe existant par ID
         System.out.println(Service.trouverMediumParId(mediums.get(0).getId()));
         System.out.println("--------------------------------");
-        
+
         System.out.println("--------------------------------");
         System.out.println("Fault Test: Obtenir un medium inexistant par ID");
         // Obtenir un employe inexistant par ID
         Long idMedium = 15486525L;
         System.out.println(Service.trouverMediumParId(idMedium));
         System.out.println("--------------------------------");
-        
+
+        System.out.println("--------------------------------");
+        System.out.println("Validation Test: Obtenir le top 5 des médiums");
+        // Obtenir le top 5 des médiums
+        // Initialisation du classement
+        try {
+            JpaUtil.creerContextePersistance();
+            JpaUtil.ouvrirTransaction();
+
+            MediumDao mediumDao = new MediumDao();
+            for (int i = 0; i < mediums.size(); ++i) {
+                mediums.get(i).setNbConsultation(i);
+                mediumDao.modifier(mediums.get(i));
+            }
+            JpaUtil.validerTransaction();
+        } catch (Exception e) {
+            JpaUtil.annulerTransaction();
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        // Obtention du classement
+        List<Medium> top5medium = Service.obtenirTop5Medium();
+        for (Medium m : top5medium) {
+            System.out.println(m.getDenomination() + " | " + m.getNbConsultation());
+        }
+
+        System.out.println("--------------------------------");
+
         // SERVICES -----------------------------------------------
     }
 
